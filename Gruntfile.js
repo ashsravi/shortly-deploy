@@ -1,25 +1,10 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
-    // sshconfig: {
-    //   '159.203.231.235': {
-    //     host: '159.203.231.235',
-    //     username: 'root',
-    //     password: 'awesomebullets'
-    //   }
-    // },
-    // sshexec: {
-    //   deploy: {
-    //     command: 'git push live master'
-    //   },
-    //   options: {
-    //     config: '159.203.231.235'
-    //   }
-    // },
     gitpush: {
       target: {
         options: {
-          remote: 'live',
+          remote: 'ssh://root@159.203.231.235/var/repo/site.git',
           branch: 'master'
         }
       }
@@ -136,13 +121,9 @@ module.exports = function(grunt) {
   });
 
 
-  grunt.registerTask('upload', function(n) {
-    if (grunt.option('prod')) {
-      grunt.task.run([ 'deploy' ]);
-      grunt.task.run([ 'build' ]);
-    }
-    grunt.task.run([ 'server-dev' ]);
-  });
+  grunt.registerTask('upload', [ 
+    'server-dev' 
+  ]);
 
   ////////////////////////////////////////////////////
   // Main grunt tasks
@@ -153,6 +134,10 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'test', 'ugly', 'concatenate', 'ugly_css', 'lint'
+  ]);
+
+  grunt.registerTask('push', [
     'gitpush'
   ]);
 
@@ -164,9 +149,12 @@ module.exports = function(grunt) {
   //   }
   // });
 
-  grunt.registerTask('deploy', [
-    'test', 'ugly', 'concatenate', 'ugly_css', 'lint'
-  ]);
+  grunt.registerTask('deploy', function(n) {
+    if (grunt.option('prod')) {
+      grunt.task.run([ 'build']);
+    }
+      grunt.task.run([ 'push' ]);
+  });
 
   grunt.registerTask('concatenate', [
     'concat'
