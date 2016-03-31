@@ -33,8 +33,8 @@ module.exports = function(grunt) {
         separator: ';',
       },
       dist: {
-        src: ['public/client/*.js'],
-        dest: 'public/dist/client_cat.js',
+        src: ['public/dist/*.js'],
+        dest: 'public/client.min.cat.js',
       }
     },
     mochaTest: {
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
       },
       target: {
         files: {
-          'public/dist/style.min.css': ['public/style.css']
+          'public/style.min.css': ['public/style.css']
         }
       }
     },
@@ -165,7 +165,7 @@ module.exports = function(grunt) {
   // });
 
   grunt.registerTask('deploy', [
-    'test', 'concatenate', 'ugly', 'ugly_css', 'lint'
+    'test', 'ugly', 'concatenate', 'ugly_css', 'lint'
   ]);
 
   grunt.registerTask('concatenate', [
