@@ -9,6 +9,25 @@ module.exports = function(grunt) {
         }
       }
     },
+    gitadd: {
+      files: {
+        src: ['public/client.min.cat.js', 'public/style.min.css']
+      }
+    },
+
+    gitcommit: {
+      task: {
+        options: {
+          message: 'new commit',
+          // noVerify: true,
+          noStatus: false,
+          force: true
+        },
+        files: {
+          src: ['public/client.min.cat.js', 'public/style.min.css']
+        }
+      }
+    },
 
     pkg: grunt.file.readJSON(
 
@@ -94,6 +113,7 @@ module.exports = function(grunt) {
     }
   }),
 
+  grunt.loadNpmTasks('grunt-bumper');
   grunt.loadNpmTasks('grunt-git');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -130,15 +150,15 @@ module.exports = function(grunt) {
   ////////////////////////////////////////////////////
 
   grunt.registerTask('test', [
-    'mochaTest'
+    'mochaTest' 
   ]);
 
   grunt.registerTask('build', [
-    'test', 'ugly', 'concatenate', 'ugly_css', 'lint'
+    'test', 'ugly', 'concatenate', 'ugly_css'
   ]);
 
   grunt.registerTask('push', [
-    'gitpush'
+    'gitadd', 'gitcommit', 'gitpush'
   ]);
 
   // grunt.registerTask('upload', function(n) {
@@ -153,7 +173,7 @@ module.exports = function(grunt) {
     if (grunt.option('prod')) {
       grunt.task.run([ 'build']);
     }
-      grunt.task.run([ 'push' ]);
+    grunt.task.run([ 'push' ]);
   });
 
   grunt.registerTask('concatenate', [

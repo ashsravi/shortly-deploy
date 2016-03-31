@@ -1,3 +1,25 @@
+var mongoose = require('mongoose');
+// mongoose.connect('159.203.231.235:4568/');
+
+// create a schema
+var userSchema = new Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  createdAt: Date,
+  updatedAt: Date
+});
+
+// the schema is useless so far
+// we need to create a model using it
+var User = mongoose.model('User', userSchema);
+
+// make this available to our users in our Node applications
+module.exports = User;
+
+
+
+
+
 var path = require('path');
 var knex = require('knex')({
   client: 'sqlite3',
