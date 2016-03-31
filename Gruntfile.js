@@ -17,14 +17,16 @@ module.exports = function(grunt) {
       }
     },
         
-    pkg: grunt.file.readJSON('package.json'),
+    pkg: grunt.file.readJSON(
+
+      'package.json'),
     concat: {
       options: {
         separator: ';',
       },
       dist: {
-        src: ['/public/client/*.js'],
-        dest: '/public/dist.js',
+        src: ['public/client/*.js'],
+        dest: 'public/dist/client_cat.js',
       }
     },
     mochaTest: {
@@ -43,6 +45,16 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      build: {
+        files: [{
+          // 'public/dist/client': ['public/client/*.js']
+          expand: true,
+          src: ['public/client/*.js', 'app/*.js', 'lib/*.js'],
+          dest: 'public/dist',
+          flatten: true,
+          ext: '.min.js'
+        }]
+      }
     },
 
     eslint: {
@@ -52,6 +64,15 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      options: {
+        shorthandCompacting: false,
+        roundingPrecision: -1
+      },
+      target: {
+        files: {
+          'public/dist/style.min.css': ['public/style.css']
+        }
+      }
     },
 
     watch: {
@@ -74,8 +95,8 @@ module.exports = function(grunt) {
     shell: {
       prodServer: {
       }
-    },
-  });
+    }
+  }),
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -86,6 +107,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-nodemon');
   grunt.loadNpmTasks('grunt-ssh');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
 
   grunt.registerTask('server-dev', function (target) {
     // Running nodejs in a different process and displaying output on the main console
@@ -131,5 +153,15 @@ module.exports = function(grunt) {
     'sshexec'
   ]);
 
+  grunt.registerTask('concatenate', [
+    'concat'
+  ]);
 
+  grunt.registerTask('ugly', [
+    'uglify'
+  ]);
+
+  grunt.registerTask('ugly_css', [
+    'cssmin'
+  ]);
 };
