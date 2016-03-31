@@ -1,22 +1,30 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
-    sshconfig: {
-      '159.203.231.235': {
-        host: '159.203.231.235',
-        username: 'root',
-        password: 'awesomebullets'
+    // sshconfig: {
+    //   '159.203.231.235': {
+    //     host: '159.203.231.235',
+    //     username: 'root',
+    //     password: 'awesomebullets'
+    //   }
+    // },
+    // sshexec: {
+    //   deploy: {
+    //     command: 'git push live master'
+    //   },
+    //   options: {
+    //     config: '159.203.231.235'
+    //   }
+    // },
+    gitpush: {
+      target: {
+        options: {
+          remote: 'live',
+          branch: 'master'
+        }
       }
     },
-    sshexec: {
-      deploy: {
-        command: 'git push ssh://root@159.203.231.235/var/repo/site.git master'
-      },
-      options: {
-        config: '159.203.231.235'
-      }
-    },
-        
+
     pkg: grunt.file.readJSON(
 
       'package.json'),
@@ -47,9 +55,8 @@ module.exports = function(grunt) {
     uglify: {
       build: {
         files: [{
-          // 'public/dist/client': ['public/client/*.js']
           expand: true,
-          src: ['public/client/*.js', 'app/*.js', 'lib/*.js'],
+          src: ['public/client/*.js', 'app/**/*.js', 'lib/*.js'],
           dest: 'public/dist',
           flatten: true,
           ext: '.min.js'
@@ -58,9 +65,13 @@ module.exports = function(grunt) {
     },
 
     eslint: {
-      target: [
-        // Add list of files to lint here
-      ]
+      files: {
+        src: ['app/**/*.js', 'public/client/*.js', 'lib/*.js']
+      },
+      options: {
+        config: 'node_modules/eslint-config-hackreactor/package.json',
+        rulesDir: 'node_modules/eslint-config-hackreactor/'
+      }
     },
 
     cssmin: {
@@ -98,6 +109,7 @@ module.exports = function(grunt) {
     }
   }),
 
+  grunt.loadNpmTasks('grunt-git');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -108,6 +120,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-nodemon');
   grunt.loadNpmTasks('grunt-ssh');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('eslint-grunt');
 
   grunt.registerTask('server-dev', function (target) {
     // Running nodejs in a different process and displaying output on the main console
@@ -125,7 +138,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('upload', function(n) {
     if (grunt.option('prod')) {
-      // add your production server task here
+      grunt.task.run([ 'deploy' ]);
+      grunt.task.run([ 'build' ]);
     }
     grunt.task.run([ 'server-dev' ]);
   });
@@ -139,18 +153,19 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'gitpush'
   ]);
 
-  grunt.registerTask('upload', function(n) {
-    if (grunt.option('prod')) {
-      // add your production server task here
-    } else {
-      grunt.task.run([ 'server-dev' ]);
-    }
-  });
+  // grunt.registerTask('upload', function(n) {
+  //   if (grunt.option('prod')) {
+  //     // add your production server task here
+  //   } else {
+  //     grunt.task.run([ 'server-dev' ]);
+  //   }
+  // });
 
   grunt.registerTask('deploy', [
-    'sshexec'
+    'test', 'concatenate', 'ugly', 'ugly_css', 'lint'
   ]);
 
   grunt.registerTask('concatenate', [
@@ -163,5 +178,9 @@ module.exports = function(grunt) {
 
   grunt.registerTask('ugly_css', [
     'cssmin'
+  ]);
+
+  grunt.registerTask('lint', [
+    'eslint'
   ]);
 };
