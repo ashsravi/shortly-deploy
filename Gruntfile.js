@@ -1,10 +1,32 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
+    sshconfig: {
+      '159.203.231.235': {
+        host: '159.203.231.235',
+        username: 'root',
+        password: 'awesomebullets'
+      }
+    },
+    sshexec: {
+      deploy: {
+        command: 'git push ssh://root@159.203.231.235/var/repo/site.git master'
+      },
+      options: {
+        config: '159.203.231.235'
+      }
+    },
+        
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      options: {
+        separator: ';',
+      },
+      dist: {
+        src: ['/public/client/*.js'],
+        dest: '/public/dist.js',
+      }
     },
-
     mochaTest: {
       test: {
         options: {
@@ -63,6 +85,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-nodemon');
+  grunt.loadNpmTasks('grunt-ssh');
 
   grunt.registerTask('server-dev', function (target) {
     // Running nodejs in a different process and displaying output on the main console
@@ -105,7 +128,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('deploy', [
-    // add your deploy tasks here
+    'sshexec'
   ]);
 
 
