@@ -154,7 +154,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
-    'test', 'ugly', 'concatenate', 'ugly_css'
+    'ugly', 'concatenate', 'ugly_css'
   ]);
 
   grunt.registerTask('push', [
