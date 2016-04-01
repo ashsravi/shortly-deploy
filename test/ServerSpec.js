@@ -224,7 +224,9 @@ describe('', function() {
           'username': 'Phillip',
           'password': 'Phillip' })
         .expect(302)
+
         .expect(function(res) {
+          console.log('CODE RESPONSE: ', res.headers);
           expect(res.headers.location).to.equal('/');
         })
         .end(done);

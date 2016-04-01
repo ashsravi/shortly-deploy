@@ -15,10 +15,10 @@ var linkSchema = new Schema({
 
 //shorten function
 linkSchema.pre('save', function(next) {
-  console.log('WE WANT TO SAVE A NEW LINK WITH A CODE');
   var shasum = crypto.createHash('sha1');
   shasum.update(this.url);
   this.code = shasum.digest('hex').slice(0, 5);
+  console.log('WE WANT TO SAVE A NEW LINK WITH A CODE', this.code);
   next();
 });
 

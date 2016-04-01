@@ -11,24 +11,24 @@ var userSchema = new Schema({
   updatedAt: Date
 });
 
-userSchema.pre('save', function(next, attemptedPassword, callback) {
-  bcrypt.compare(attemptedPassword, this.password, function(err, isMatch) {
-    callback(isMatch);
-  });
-  next();
-});
-
-userSchema.methods.comparePassword = function() {
+userSchema.pre('save', function(next) {
   var cipher = Promise.promisify(bcrypt.hash);
   return cipher(this.password, null, null).bind(this)
     .then(function(hash) {
       this.password = hash;
+      next();
     });
-};
+});
 
 // the schema is useless so far
 // we need to create a model using it
 var User = mongoose.model('User', userSchema);
+
+User.comparepassword = function(attemptedPassword, callback) {
+  bcrypt.compare(attemptedPassword, this.password, function(err, isMatch) {
+    callback(null, isMatch);
+  });
+};
 
 // make this available to our users in our Node applications
 module.exports = User;
