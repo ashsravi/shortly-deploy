@@ -11,10 +11,11 @@ var userSchema = new Schema({
   updatedAt: Date
 });
 
-userSchema.pre('save', function(attemptedPassword, callback) {
+userSchema.pre('save', function(next, attemptedPassword, callback) {
   bcrypt.compare(attemptedPassword, this.password, function(err, isMatch) {
     callback(isMatch);
   });
+  next();
 });
 
 userSchema.methods.comparePassword = function() {
